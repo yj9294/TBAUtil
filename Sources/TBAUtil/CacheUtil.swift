@@ -64,8 +64,10 @@ public class TBACacheUtil: NSObject {
     @UserDefault(key: "user.agent")
     private var userAgent: String?
     
-    @UserDefault(key: "first.open.count")
-    private var firstOpenSuccessCnt: Int?
+    @UserDefault(key: "first.open.success.count")
+    private var firstOpenSuccessCount: Int?
+    @UserDefault(key: "first.open.fail.count")
+    private var firstOpenFailCount: Int?
     
     @UserDefault(key: "first.notification")
     private var firstNoti: Bool?
@@ -147,12 +149,16 @@ public class TBACacheUtil: NSObject {
         }).first
     }
     
-    func cacheOfFirstOpenCount() -> Int {
-        firstOpenSuccessCnt ?? 0
+    func needRequestFirstOpen() -> Bool {
+        (firstOpenFailCount ?? 0) < 6 && (firstOpenSuccessCount ?? 0) < 6
     }
     
-    func cacheFirstOpenCount() {
-        firstOpenSuccessCnt = cacheOfFirstOpenCount() + 1
+    func cacheFirstOpen(isSuccess: Bool) {
+        if isSuccess {
+            firstOpenSuccessCount = (firstOpenSuccessCount ?? 0) + 1
+        } else {
+            firstOpenFailCount = (firstOpenFailCount ?? 0) + 1
+        }
     }
     
     
@@ -185,14 +191,6 @@ public class TBACacheUtil: NSObject {
             return userAgent
         }
         return ""
-    }
-
-    func uploadFirstOpenSuccess() {
-        firstOpenSuccessCnt =  (firstOpenSuccessCnt ?? 0) + 1
-    }
-    
-    func getFirstOpenCnt() -> Int {
-        firstOpenSuccessCnt ?? 0
     }
     
     func needUploadFBPrice() -> Bool {

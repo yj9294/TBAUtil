@@ -10,6 +10,9 @@ public protocol TBARequest {
     // 4. 设置公共头部
     // 5. 设置公共Query
     // 6. 设置全局属性（放到公共参数里面）
+    // 7. 设置 session 参数
+    // 8. 设置 install 参数
+    // 9. 设置 first_open 参数
     static func preloadPool()
     
     // 1. 设置广告事件参数映射
@@ -21,5 +24,5 @@ public protocol TBARequest {
     // event key 是确定的事件名称
     // value 是事件参数键值
     // ⚠️ 记得判定 first_open 事件 将api key设置为 first open
-    static func tbaEventReequest(_ key: APIKey, eventKey: String, value: [String: Any]?)
+    static func tbaEventReequest(eventKey: String , value: [String: Any]?)
 }

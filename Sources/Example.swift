@@ -77,6 +77,8 @@ extension Request: TBARequest {
         
         let sessionParam: [String: Any] = [:]
         Request.sessionParam = ["disperse": sessionParam]
+        
+        Request.eventParam = ["bessel" : "first_open"]
     }
     
     static func tbaADRequest(ad: ADBaseModel?) {
@@ -96,18 +98,14 @@ extension Request: TBARequest {
         Request.tbaRequest(key: .ad, ad: nil)
     }
     
-    static func tbaEventReequest(_ key: APIKey = .normalEvent, eventKey: String = "", value: [String: Any]? = nil) {
+    static func tbaEventReequest(eventKey: String = "", value: [String: Any]? = nil) {
         var eventParam: [String: Any] = [:]
-        eventParam["bessel"] = key.isFirstOpen ? APIKey.firstOpen.rawValue : eventKey
+        eventParam["bessel"] = eventKey
 //MARK: 私有属性
         value?.keys.forEach({ key in
             eventParam["lisa/\(key)"] = value?[key]
         })
         Request.eventParam = eventParam
-        if key.isFirstOpen {
-            Request.tbaRequest(key: .firstOpen)
-        } else {
-            Request.tbaRequest(key: .normalEvent, eventKey: eventKey, value: value)
-        }
+        Request.tbaRequest(key: .normalEvent, eventKey: eventKey, value: value)
     }
 }

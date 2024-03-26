@@ -41,7 +41,7 @@ extension Request {
             }
         }
         if key.isEvent {
-            Request.eventequest(id: id, eventKey: eventKey, value: value) { ret in
+            Request.eventRequest(id: id, eventKey: eventKey, value: value) { ret in
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
@@ -53,10 +53,10 @@ extension Request {
             }
         }
         if key.isFirstOpen {
-            if TBACacheUtil.shared.cacheOfFirstOpenCount() >= 6 {
+            if !TBACacheUtil.shared.needRequestFirstOpen() {
                 return
             }
-            Request.eventequest(id: id, key: .firstOpen) { ret in
+            Request.firstOpenRequest(id: id) { ret in
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
@@ -65,16 +65,16 @@ extension Request {
                         }
                     }
                 } else if ret {
-                    TBACacheUtil.shared.cacheFirstOpenCount()
+                    TBACacheUtil.shared.cacheFirstOpen(isSuccess: true)
                 }
             }
             Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
-                if TBACacheUtil.shared.cacheOfFirstOpenCount() >= 6 {
+                if !TBACacheUtil.shared.needRequestFirstOpen(){
                     timer.invalidate()
                     return
                 }
-                let id = UUID().uuidString
-                Request.eventequest(id: id, key: .firstOpen) { ret in
+                let nid = UUID().uuidString
+                Request.firstOpenRequest(id: nid) { ret in
                     if !ret, retry {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                             if TBACacheUtil.shared.cache(id) != nil {
@@ -83,7 +83,7 @@ extension Request {
                             }
                         }
                     } else if ret {
-                        TBACacheUtil.shared.cacheFirstOpenCount()
+                        TBACacheUtil.shared.cacheFirstOpen(isSuccess: true)
                     }
                 }
             }
@@ -144,33 +144,39 @@ extension Request {
         }
     }
     
-    private class func eventequest(id: String, key: APIKey = .normalEvent, eventKey: String = APIKey.normalEvent.rawValue, value: [String: Any]? = nil, completion: ((Bool)->Void)? = nil) {
-        if key == .normalEvent {
-            if value?.isEmpty != false {
-                debugPrint("[tba] 开始上报 \(eventKey) param:\(value ?? [:])")
-            } else {
-                debugPrint("[tba] 开始上报 \(eventKey)")
-            }
-        } else {
-            debugPrint("[tba] 开始上报 \(key) param:\(value ?? [:])")
+    private class func firstOpenRequest(id: String, completion: ((Bool)->Void)? = nil) {
+        debugPrint("[tba] 开始上报 first_open ")
+        Request(id: id, parameters: Request.adParam).netWorkConfig { req in
+            req.method = .post
+            req.key = .firstOpen
+        }.startRequestSuccess { _ in
+            debugPrint("[tba] 上报 first_open 成功 ✅✅✅")
+            completion?(true)
+        }.error { obj, code in
+            debugPrint("[tba] 上报 first_open 失败 ❌❌❌")
+            completion?(false)
         }
+    }
+    
+    private class func eventRequest(id: String, key: APIKey = .normalEvent, eventKey: String = APIKey.normalEvent.rawValue, value: [String: Any]? = nil, completion: ((Bool)->Void)? = nil) {
+        if eventKey.isEmpty || (eventKey == APIKey.normalEvent.rawValue && key != .firstOpen){
+            return
+        }
+        if value?.isEmpty != false {
+            debugPrint("[tba] 开始上报 \(eventKey) param:\(value ?? [:])")
+        } else {
+            debugPrint("[tba] 开始上报 \(eventKey)")
+        }
+
         Request(id: id, parameters: Request.eventParam).netWorkConfig { req in
             req.method = .post
             req.key = key
             req.eventKey = eventKey
         }.startRequestSuccess { _ in
-            if key == .normalEvent {
-                debugPrint("[tba] 上报 \(eventKey) 成功 ✅✅✅")
-            } else {
-                debugPrint("[tba] 上报 \(key) 成功 ✅✅✅")
-            }
+            debugPrint("[tba] 上报 \(eventKey) 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            if key == .normalEvent {
-                debugPrint("[tba] 上报 \(eventKey) 失败 ❌❌❌")
-            } else {
-                debugPrint("[tba] 上报 \(key) 失败 ❌❌❌")
-            }
+            debugPrint("[tba] 上报 \(eventKey) 失败 ❌❌❌")
             completion?(false)
         }
     }

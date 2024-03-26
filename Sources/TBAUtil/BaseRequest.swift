@@ -41,6 +41,8 @@ public class Request {
     public static var url: String = ""
     public static var osString: String = ""
     public static var att:[Bool:String] = [:]
+    public static var logKeyName: String = ""
+    public static var dateKeyNames: [String] = []
     // 公共参数
     public static var commonParam:[String: Any] = [:]
     // 公共头部
@@ -53,6 +55,8 @@ public class Request {
     public static var adParam: [String: Any] = [:]
     // session 参数
     public static var sessionParam: [String: Any] = [:]
+    // firstOpen 参数
+    public static var firstOpenParam: [String: Any] = [:]
     // event 参数
     public static var eventParam: [String: Any] = [:]
     public static func parametersPool(_ ad: GADBaseModel? = nil) -> [String: Any] {
@@ -266,7 +270,14 @@ extension Request {
     // MARK: 错误处理
     func handleError(code:Int, error: Any?, request: URLRequest?) -> Void {
         // 通过id进行缓存
-        TBACacheUtil.shared.appendCache(RequestCache(id, key: key, eventKey: eventKey, req: request))
+        if key.isFirstOpen {
+            if TBACacheUtil.shared.needRequestFirstOpen() {
+                TBACacheUtil.shared.cacheFirstOpen(isSuccess: false)
+                TBACacheUtil.shared.appendCache(RequestCache(id, key: key, eventKey: eventKey, req: request))
+            }
+        } else {
+            TBACacheUtil.shared.appendCache(RequestCache(id, key: key, eventKey: eventKey, req: request))
+        }
         self.error?(error, RequestCode(rawValue: code) ?? .unknown)
         self.end?()
         self.end = nil
