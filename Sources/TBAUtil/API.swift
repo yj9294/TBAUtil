@@ -56,6 +56,9 @@ extension Request {
             if !TBACacheUtil.shared.needRequestFirstOpen() {
                 return
             }
+            if !TBACacheUtil.shared.needCacheFirstOpenFail(), retry {
+                return
+            }
             Request.firstOpenRequest(id: id) { ret in
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
@@ -67,6 +70,10 @@ extension Request {
                 } else if ret {
                     TBACacheUtil.shared.cacheFirstOpen(isSuccess: true)
                 }
+            }
+            // 通过retry 判定是缓存的请求还是 首次入口请求
+            if !retry {
+                return
             }
             Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
                 if !TBACacheUtil.shared.needRequestFirstOpen(){

@@ -150,7 +150,11 @@ public class TBACacheUtil: NSObject {
     }
     
     func needRequestFirstOpen() -> Bool {
-        (firstOpenFailCount ?? 0) < 6 && (firstOpenSuccessCount ?? 0) < 6
+        (firstOpenSuccessCount ?? 0) < 6
+    }
+    
+    func needCacheFirstOpenFail() -> Bool {
+        (firstOpenFailCount ?? 0) < 6
     }
     
     func cacheFirstOpen(isSuccess: Bool) {

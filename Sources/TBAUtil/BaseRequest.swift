@@ -271,9 +271,11 @@ extension Request {
     func handleError(code:Int, error: Any?, request: URLRequest?) -> Void {
         // 通过id进行缓存
         if key.isFirstOpen {
-            if TBACacheUtil.shared.needRequestFirstOpen() {
-                TBACacheUtil.shared.cacheFirstOpen(isSuccess: false)
-                TBACacheUtil.shared.appendCache(RequestCache(id, key: key, eventKey: eventKey, req: request))
+            if TBACacheUtil.shared.needCacheFirstOpenFail() {
+                if TBACacheUtil.shared.cache(id) == nil {
+                    TBACacheUtil.shared.appendCache(RequestCache(id, key: key, eventKey: eventKey, req: request))
+                    TBACacheUtil.shared.cacheFirstOpen(isSuccess: false)
+                }
             }
         } else {
             TBACacheUtil.shared.appendCache(RequestCache(id, key: key, eventKey: eventKey, req: request))
