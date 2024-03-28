@@ -41,7 +41,7 @@ public class Request {
     public static var url: String = ""
     public static var osString: String = ""
     public static var att:[Bool:String] = [:]
-    public static var logKeyName: String = ""
+    public static var idKeyNames: [String] = []
     public static var dateKeyNames: [String] = []
     // 公共参数
     public static var commonParam:[String: Any] = [:]
@@ -177,7 +177,12 @@ extension Request {
             NSLog("[tba] 请先配置 公共 query 参数")
             return
         }
-        queryDic = Request.commonQuery
+        
+        var dic: [String: String] = [:]
+        deepModifyLogID(in: Request.commonQuery, idKeyNames: Request.idKeyNames, dateKeyNames: Request.dateKeyNames).forEach { k,v in
+            dic[k] = v as? String
+        }
+        queryDic = dic
         query?.forEach({ key, value in
             queryDic[key] = value
         })
@@ -201,7 +206,11 @@ extension Request {
         if let cache = TBACacheUtil.shared.cache(id) {
             headerDic = cache.header
         } else {
-            headerDic = Request.commonHeader
+            var dic: [String: String] = [:]
+            deepModifyLogID(in: Request.commonHeader, idKeyNames: Request.idKeyNames, dateKeyNames: Request.dateKeyNames).forEach { k,v in
+                dic[k] = v as? String
+            }
+            headerDic = dic
         }
         
         var parameters: [String: Any] = [:]
@@ -210,8 +219,8 @@ extension Request {
             NSLog("[tba] 请先配置 公共 param 参数")
             return
         }
-        parameters = Request.commonParam
-        
+        parameters = deepModifyLogID(in: Request.commonParam, idKeyNames: Request.idKeyNames, dateKeyNames: Request.dateKeyNames)
+
         if let cache = TBACacheUtil.shared.cache(id) {
             parameters = cache.parameter.json ?? [:]
         } else {
@@ -256,6 +265,22 @@ extension Request {
             }
         }
         
+    }
+    
+    func deepModifyLogID(in dictionary: [String: Any], idKeyNames: [String], dateKeyNames: [String]) -> [String: Any] {
+        var modifiedDict = dictionary
+        
+        for (key, value) in dictionary {
+            if let nestedDict = value as? [String: Any] {
+                modifiedDict[key] = deepModifyLogID(in: nestedDict, idKeyNames: idKeyNames, dateKeyNames: dateKeyNames)
+            } else if idKeyNames.contains(key) {
+                modifiedDict[key] = UUID().uuidString
+            } else if dateKeyNames.contains(key) {
+                modifiedDict[key] = Int(Date().timeIntervalSince1970 * 1000)
+            }
+        }
+        
+        return modifiedDict
     }
     
     private func requestSuccess(_ str: String) -> Void {
