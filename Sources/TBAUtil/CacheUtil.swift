@@ -8,9 +8,9 @@
 import Foundation
 import WebKit
 
-struct FBPrice: Codable {
-    var price: Double
-    var currency: String
+public struct FBPrice: Codable {
+    public var price: Double
+    public var currency: String
 }
 
 struct RequestCache: Codable, Identifiable {
@@ -197,7 +197,7 @@ public class TBACacheUtil: NSObject {
         return ""
     }
     
-    func needUploadFBPrice() -> Bool {
+    public func needUploadFBPrice() -> Bool {
         NSLog("[FB+Adjust] 当前正在积累广告价值 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
         let ret = (fbPrice?.price ?? 0.0) > 0.01
         if ret {
@@ -208,7 +208,11 @@ public class TBACacheUtil: NSObject {
         return ret
     }
     
-    func addFBPrice(price: Double, currency: String) {
+    public func getFBPrice() -> FBPrice {
+        fbPrice ?? .init(price: 0, currency: "USD")
+    }
+    
+    public func addFBPrice(price: Double, currency: String) {
         if let fbPrice = fbPrice, fbPrice.currency == currency {
             self.fbPrice = FBPrice(price: fbPrice.price + price, currency: currency)
         } else {
