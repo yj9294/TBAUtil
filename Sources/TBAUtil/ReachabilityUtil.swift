@@ -8,7 +8,7 @@
 import Foundation
 import Reachability
 
-class ReachabilityUtil {
+public class ReachabilityUtil {
     static let shared = ReachabilityUtil()
 
     private let reachability = try! Reachability()
@@ -25,7 +25,7 @@ class ReachabilityUtil {
         stopMonitoring()
     }
 
-    func startMonitoring() {
+    public func startMonitoring() {
         NotificationCenter.default.addObserver(self, selector: #selector(networkChanged(_:)), name: .reachabilityChanged, object: reachability)
         do {
             try reachability.startNotifier()
@@ -35,7 +35,7 @@ class ReachabilityUtil {
         isConnected = reachability.connection != .unavailable
     }
 
-    func stopMonitoring() {
+    public func stopMonitoring() {
         reachability.stopNotifier()
         NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
     }
