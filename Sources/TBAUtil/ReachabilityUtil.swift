@@ -9,7 +9,7 @@ import Foundation
 import Reachability
 
 public class ReachabilityUtil {
-    static let shared = ReachabilityUtil()
+    public static let shared = ReachabilityUtil()
 
     private let reachability = try! Reachability()
     
