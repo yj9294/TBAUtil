@@ -78,7 +78,7 @@ public class TBACacheUtil: NSObject {
     var fbPrice: FBPrice?
     
     @UserDefault(key: "user.go")
-    var go: Bool?
+    public var go: Bool?
     public func getUserGo() -> Bool {
         go ?? false
     }
@@ -248,15 +248,15 @@ public final class UserAgentFetcher: NSObject {
 
 
 @propertyWrapper
-struct UserDefault<T: Codable> {
-    var value: T?
-    let key: String
+public struct UserDefault<T: Codable> {
+    public var value: T?
+    public let key: String
     init(key: String) {
         self.key = key
         self.value = UserDefaults.standard.getObject(T.self, forKey: key)
     }
     
-    var wrappedValue: T? {
+    public var wrappedValue: T? {
         set  {
             value = newValue
             UserDefaults.standard.setObject(value, forKey: key)

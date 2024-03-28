@@ -201,9 +201,10 @@ extension Request {
         }
     }
     
-    public class func requestCloak(retry: Int = 3) {
+    public class func requestCloak(retry: Int = 3, completion: (()->Void)? = nil) {
         if retry == 0 {
             NSLog("[cloak] 重试超过三次了")
+            completion?()
             return
         }
         
@@ -213,7 +214,7 @@ extension Request {
         }
         
         if TBACacheUtil.isDebug {
-            NSLog("[cloak] ")
+            NSLog("[cloak] is debug")
             return
         }
         
@@ -235,13 +236,14 @@ extension Request {
             if case .failure(let error) = complete {
                 NSLog("[cloak] err:\(error)")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-                    self.requestCloak(retry: retry - 1)
+                    self.requestCloak(retry: retry - 1, completion: completion)
                 }
             }
             token.unseal()
         } receiveValue: { data in
             NSLog("[cloak] \(data ?? "")")
             TBACacheUtil.shared.go = data == Request.cloakGoName
+            completion?()
         }.seal(in: token)
     }
 }
