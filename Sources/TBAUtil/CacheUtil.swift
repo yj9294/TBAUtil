@@ -48,7 +48,8 @@ struct RequestCache: Codable, Identifiable {
 
 
 public class TBACacheUtil: NSObject {
-    static let shared = TBACacheUtil()
+    public static let shared = TBACacheUtil()
+    public static var isDebug = true
     
     var timer: Timer? = nil
     
@@ -78,9 +79,8 @@ public class TBACacheUtil: NSObject {
     
     @UserDefault(key: "user.go")
     var go: Bool?
-    func getUserGo() -> Bool {
-//        go ?? false
-        return true
+    public func getUserGo() -> Bool {
+        go ?? false
     }
     
     @UserDefault(key: "uuid")
@@ -96,8 +96,8 @@ public class TBACacheUtil: NSObject {
     }
     @UserDefault(key: "ip")
     private var ip: String?
-    func setIP(_ ip: String) { self.ip = ip }
-    func getIP() -> String { ip ?? "" }
+    public func setIP(_ ip: String) { self.ip = ip }
+    public func getIP() -> String { ip ?? "" }
     
     override init() {
         super.init()

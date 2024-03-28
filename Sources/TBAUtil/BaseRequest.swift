@@ -38,11 +38,13 @@ typealias NetWorkError = (_ obj:Any?, _ code:RequestCode) -> Void
 typealias NetWorkEnd = () -> Void
 
 public class Request {
+    public static var cloakUrl: String = ""
     public static var url: String = ""
     public static var osString: String = ""
     public static var att:[Bool:String] = [:]
     public static var idKeyNames: [String] = []
     public static var dateKeyNames: [String] = []
+    public static var cloakGoName: String = ""
     // 公共参数
     public static var commonParam:[String: Any] = [:]
     // 公共头部
@@ -59,6 +61,8 @@ public class Request {
     public static var firstOpenParam: [String: Any] = [:]
     // event 参数
     public static var eventParam: [String: Any] = [:]
+    // cloak 参数
+    public static var cloakParam: [String: Any] = [:]
     public static func parametersPool(_ ad: GADBaseModel? = nil) -> [String: Any] {
         if osString.isEmpty {
             debugPrint("[tba] 请先设置 osString ")

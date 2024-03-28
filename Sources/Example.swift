@@ -16,6 +16,29 @@ extension Request: TBARequest {
         Request.osString = "talcum"
         // 是否限制追踪 枚举映射字段名称
         Request.att = [true: "jeopard", false: "ferguson"]
+        // date key name
+        Request.dateKeyNames = ["foist"]
+        // id key name
+        Request.idKeyNames = ["extremum"]
+        // cloak.url
+        Request.cloakUrl = "https://www.ddxx.com"
+        // cloak go key name
+        Request.cloakGoName = "roundoff"
+        // cloak param
+        var cloakParams: [String: Any] = [:]
+        params["thai"] = Request.parametersPool()["distinct_id"]
+        params["foist"] = Request.parametersPool()["client_ts"]
+        params["bun"] = Request.parametersPool()["device_model"]
+        params["psych"] = Request.parametersPool()["bundle_id"]
+        params["deceive"] = Request.parametersPool()["os_version"]
+        params["waveform"] = Request.parametersPool()["idfv"]
+        params["govern"] = ""
+        params["cackle"] = ""
+        params["hide"] = Request.parametersPool()["os"]
+        params["quaver"] =  Request.parametersPool()["idfa"]
+        params["madonna"] = Request.parametersPool()["app_version"]
+        Request.cloakParam = cloakParams
+        
         
         // 公共参数
         var parameters: [String: Any] = [:]
@@ -79,6 +102,8 @@ extension Request: TBARequest {
         Request.sessionParam = ["disperse": sessionParam]
         
         Request.eventParam = ["bessel" : "first_open"]
+        
+    
     }
     
     static func tbaADRequest(ad: ADBaseModel?) {

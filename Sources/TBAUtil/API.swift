@@ -9,6 +9,19 @@ import Foundation
 import WebKit
 import GADUtil
 import AdSupport
+import Combine
+
+public class SubscriptionToken {
+    public var cancelable: AnyCancellable?
+    public func unseal() { cancelable = nil }
+}
+
+extension AnyCancellable {
+    /// 需要 出现 unseal 方法释放 cancelable
+    public func seal(in token: SubscriptionToken) {
+        token.cancelable = self
+    }
+}
 
 extension Request {
     
@@ -186,6 +199,50 @@ extension Request {
             debugPrint("[tba] 上报 \(eventKey) 失败 ❌❌❌")
             completion?(false)
         }
+    }
+    
+    public class func requestCloak(retry: Int = 3) {
+        if retry == 0 {
+            NSLog("[cloak] 重试超过三次了")
+            return
+        }
+        
+        if let go = TBACacheUtil.shared.go {
+            NSLog("[cloak] 当前已有cloak 是否是激进模式: \(go)")
+            return
+        }
+        
+        if TBACacheUtil.isDebug {
+            NSLog("[cloak] ")
+            return
+        }
+        
+        let token = SubscriptionToken()
+        var url = Request.cloakUrl
+        url.append("?")
+        let params = Request.cloakParam
+        let ret = Request.cloakParam.keys.map { key in
+            "\(key)=\(params[key] ?? "")"
+        }.joined(separator: "&")
+        url.append(ret)
+        if let query = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            url = query
+        }
+        NSLog("[cloak] start request: \(url)")
+        URLSession.shared.dataTaskPublisher(for: URL(string: url)!).map({
+            String(data: $0.data, encoding: .utf8)
+        }).eraseToAnyPublisher().sink { complete in
+            if case .failure(let error) = complete {
+                NSLog("[cloak] err:\(error)")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    self.requestCloak(retry: retry - 1)
+                }
+            }
+            token.unseal()
+        } receiveValue: { data in
+            NSLog("[cloak] \(data ?? "")")
+            TBACacheUtil.shared.go = data == Request.cloakGoName
+        }.seal(in: token)
     }
 }
 
