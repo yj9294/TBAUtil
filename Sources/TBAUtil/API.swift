@@ -153,7 +153,7 @@ extension Request {
     
     private class func firstOpenRequest(id: String, completion: ((Bool)->Void)? = nil) {
         debugPrint("[tba] 开始上报 first_open ")
-        Request(id: id, parameters: Request.adParam).netWorkConfig { req in
+        Request(id: id, parameters: Request.firstOpenParam).netWorkConfig { req in
             req.method = .post
             req.key = .firstOpen
         }.startRequestSuccess { _ in
