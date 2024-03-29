@@ -255,7 +255,7 @@ public final class UserAgentFetcher: NSObject {
 public struct UserDefault<T: Codable> {
     public var value: T?
     public let key: String
-    init(key: String) {
+    public init(key: String) {
         self.key = key
         self.value = UserDefaults.standard.getObject(T.self, forKey: key)
     }
@@ -273,7 +273,7 @@ public struct UserDefault<T: Codable> {
 
 
 extension UserDefaults {
-    func setObject<T: Codable>(_ object: T?, forKey key: String) {
+    public func setObject<T: Codable>(_ object: T?, forKey key: String) {
         let encoder = JSONEncoder()
         guard let object = object else {
             NSLog("[US] object is nil.")
@@ -289,7 +289,7 @@ extension UserDefaults {
         self.setValue(encoded, forKey: key)
     }
     
-    func getObject<T: Codable>(_ type: T.Type, forKey key: String) -> T? {
+    public func getObject<T: Codable>(_ type: T.Type, forKey key: String) -> T? {
         guard let data = self.data(forKey: key) else {
             NSLog("[US] data is nil for \(key).")
             return nil
