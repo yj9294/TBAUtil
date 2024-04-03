@@ -16,8 +16,10 @@ extension Request: TBARequest {
         Request.osString = "talcum"
         // 是否限制追踪 枚举映射字段名称
         Request.att = [true: "jeopard", false: "ferguson"]
-        // date key name
-        Request.dateKeyNames = ["foist"]
+        // mil sec key name
+        Request.milKeyNames = ["foist"]
+        // sec key name
+        Request.secKeyNames = ["foist"]
         // id key name
         Request.idKeyNames = ["extremum"]
         // cloak.url

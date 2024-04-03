@@ -43,7 +43,8 @@ public class Request {
     public static var osString: String = ""
     public static var att:[Bool:String] = [:]
     public static var idKeyNames: [String] = []
-    public static var dateKeyNames: [String] = []
+    public static var secKeyNames: [String] = []
+    public static var milKeyNames: [String] = []
     public static var cloakGoName: String = ""
     // 公共参数
     public static var commonParam:[String: Any] = [:]
@@ -183,7 +184,7 @@ extension Request {
         }
         
         var dic: [String: String] = [:]
-        deepModifyLogID(in: Request.commonQuery, idKeyNames: Request.idKeyNames, dateKeyNames: Request.dateKeyNames).forEach { k,v in
+        deepModifyLogID(in: Request.commonQuery, idKeyNames: Request.idKeyNames, secKeyNames: Request.secKeyNames, milKeyNames: Request.milKeyNames).forEach { k,v in
             dic[k] = v as? String
         }
         queryDic = dic
@@ -211,7 +212,7 @@ extension Request {
             headerDic = cache.header
         } else {
             var dic: [String: String] = [:]
-            deepModifyLogID(in: Request.commonHeader, idKeyNames: Request.idKeyNames, dateKeyNames: Request.dateKeyNames).forEach { k,v in
+            deepModifyLogID(in: Request.commonHeader, idKeyNames: Request.idKeyNames, secKeyNames: Request.secKeyNames, milKeyNames: Request.milKeyNames).forEach { k,v in
                 dic[k] = v as? String
             }
             headerDic = dic
@@ -223,7 +224,7 @@ extension Request {
             NSLog("[tba] 请先配置 公共 param 参数")
             return
         }
-        parameters = deepModifyLogID(in: Request.commonParam, idKeyNames: Request.idKeyNames, dateKeyNames: Request.dateKeyNames)
+        parameters = deepModifyLogID(in: Request.commonParam, idKeyNames: Request.idKeyNames, secKeyNames: Request.secKeyNames, milKeyNames: Request.milKeyNames)
 
         if let cache = TBACacheUtil.shared.cache(id) {
             parameters = cache.parameter.json ?? [:]
@@ -271,16 +272,18 @@ extension Request {
         
     }
     
-    func deepModifyLogID(in dictionary: [String: Any], idKeyNames: [String], dateKeyNames: [String]) -> [String: Any] {
+    func deepModifyLogID(in dictionary: [String: Any], idKeyNames: [String], secKeyNames: [String], milKeyNames: [String]) -> [String: Any] {
         var modifiedDict = dictionary
         
         for (key, value) in dictionary {
             if let nestedDict = value as? [String: Any] {
-                modifiedDict[key] = deepModifyLogID(in: nestedDict, idKeyNames: idKeyNames, dateKeyNames: dateKeyNames)
+                modifiedDict[key] = deepModifyLogID(in: nestedDict, idKeyNames: idKeyNames, secKeyNames: secKeyNames, milKeyNames: milKeyNames)
             } else if idKeyNames.contains(key) {
                 modifiedDict[key] = UUID().uuidString
-            } else if dateKeyNames.contains(key) {
+            } else if milKeyNames.contains(key) {
                 modifiedDict[key] = Int(Date().timeIntervalSince1970 * 1000)
+            } else if secKeyNames.contains(key) {
+                modifiedDict[key] = Int(Date().timeIntervalSince1970)
             }
         }
         
