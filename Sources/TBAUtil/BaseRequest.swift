@@ -66,11 +66,11 @@ public class Request {
     public static var cloakParam: [String: Any] = [:]
     public static func parametersPool(_ ad: GADBaseModel? = nil) -> [String: Any] {
         if osString.isEmpty {
-            debugPrint("[tba] 请先设置 osString ")
+            NSLog("[tba] 请先设置 osString ")
             return [:]
         }
         if att.isEmpty {
-            debugPrint("[tba] 请先设置 att 枚举")
+            NSLog("[tba] 请先设置 att 枚举")
             return [:]
         }
         return ["manufacturer": "apple",
@@ -166,7 +166,7 @@ public class Request {
     }
     
     deinit {
-        debugPrint("[API] request===============deinit")
+        NSLog("[API] request===============deinit")
     }
     
 }
@@ -242,11 +242,11 @@ extension Request {
                 rq.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
                 rq.httpBody = parameters.data
             }
-            debugPrint("[API] -----------------------")
-            debugPrint("[API] 请求地址:\(url)")
-            debugPrint("[API] 请求参数:\(parameters.jsonString ?? "")")
-            debugPrint("[API] 请求header:\(headerDic.jsonString ?? "")")
-            debugPrint("[API] -----------------------")
+            NSLog("[API] -----------------------")
+            NSLog("[API] 请求地址:\(url)")
+            NSLog("[API] 请求参数:\(parameters.jsonString ?? "")")
+            NSLog("[API] 请求header:\(headerDic.jsonString ?? "")")
+            NSLog("[API] -----------------------")
         }
         
         dataRequest = sessionManager.request(url, method: method, parameters: nil , encoding: JSONEncoding(), headers: HTTPHeaders.init(headerDic), requestModifier: requestModifier)
@@ -256,16 +256,16 @@ extension Request {
                 
                 let retStr = String(data: result.data ?? Data(), encoding: .utf8)
                 let code = result.response?.statusCode ?? -9999
-                debugPrint("[API] ❌❌❌ key:\(self.key) code: \(code) error:\(retStr ?? "")")
+                NSLog("[API] ❌❌❌ key:\(self.key) code: \(code) error:\(retStr ?? "")")
                 self.handleError(code: code, error: retStr, request: result.request)
                 return
             }
             if let data = result.data {
                 let retStr = String(data: data, encoding: .utf8) ?? ""
-                debugPrint("[API] ✅✅✅ key: \(self.key) response \(retStr)")
+                NSLog("[API] ✅✅✅ key: \(self.key) response \(retStr)")
                 self.requestSuccess(retStr)
             } else {
-                debugPrint("[API] ❌❌❌ event: \(self.key) response data is nil")
+                NSLog("[API] ❌❌❌ event: \(self.key) response data is nil")
                 self.handleError(code: RequestCode.serverError.rawValue, error: nil, request: result.request)
             }
         }

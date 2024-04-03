@@ -34,7 +34,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            debugPrint("[tba] 开始重试上报 install 事件")
+                            NSLog("[tba] 开始重试上报 install 事件")
                             self.tbaRequest(id, key: key, retry: false)
                         }
                     }
@@ -46,7 +46,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            debugPrint("[tba] 开始重试上报 session 事件")
+                            NSLog("[tba] 开始重试上报 session 事件")
                             self.tbaRequest(id, key: key, retry: false)
                         }
                     }
@@ -58,7 +58,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            debugPrint("[tba] 开始重试上报 \(eventKey) 事件")
+                            NSLog("[tba] 开始重试上报 \(eventKey) 事件")
                             self.tbaRequest(id, key: .normalEvent, eventKey: eventKey, value: value, retry: false)
                         }
                     }
@@ -76,7 +76,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            debugPrint("[tba] 开始重试上报 firstOpen 事件")
+                            NSLog("[tba] 开始重试上报 firstOpen 事件")
                             self.tbaRequest(id, key: key, retry: false)
                         }
                     }
@@ -98,7 +98,7 @@ extension Request {
                     if !ret, retry {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                             if TBACacheUtil.shared.cache(id) != nil {
-                                debugPrint("[tba] 开始重试上报 firstOpen 事件")
+                                NSLog("[tba] 开始重试上报 firstOpen 事件")
                                 self.tbaRequest(id, key: key, retry: false)
                             }
                         }
@@ -113,7 +113,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            debugPrint("[tba] 开始重试上报 ad 事件")
+                            NSLog("[tba] 开始重试上报 ad 事件")
                             self.tbaRequest(id, key: key, ad: ad, retry: false)
                         }
                     }
@@ -123,57 +123,57 @@ extension Request {
     }
 
     private class func installRequest(id: String, completion: ((Bool)->Void)? = nil) {
-        debugPrint("[tba] 开始上报 install ")
+        NSLog("[tba] 开始上报 install ")
         Request(id: id, parameters: Request.installParam).netWorkConfig { req in
             req.method = .post
             req.key = .install
         }.startRequestSuccess { _ in
-            debugPrint("[tba] 上报 install 成功 ✅✅✅")
+            NSLog("[tba] 上报 install 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            debugPrint("[tba] 上报 install 失败 ❌❌❌")
+            NSLog("[tba] 上报 install 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     private class func sessionRequest(id: String, completion: ((Bool)->Void)? = nil) {
-        debugPrint("[tba] 开始上报 session ")
+        NSLog("[tba] 开始上报 session ")
         Request(id: id, parameters: Request.sessionParam).netWorkConfig { req in
             req.method = .post
             req.key = .session
         }.startRequestSuccess { _ in
-            debugPrint("[tba] 上报 session 成功 ✅✅✅")
+            NSLog("[tba] 上报 session 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            debugPrint("[tba] 上报 session 失败 ❌❌❌")
+            NSLog("[tba] 上报 session 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     private class func adRequest(id: String, ad: GADBaseModel, completion: ((Bool)->Void)? = nil) {
-        debugPrint("[tba] 开始上报 ad ")
+        NSLog("[tba] 开始上报 ad ")
         Request(id: id, parameters: Request.adParam).netWorkConfig { req in
             req.method = .post
             req.key = .ad
         }.startRequestSuccess { _ in
-            debugPrint("[tba] 上报 ad 成功 ✅✅✅")
+            NSLog("[tba] 上报 ad 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            debugPrint("[tba] 上报 ad 失败 ❌❌❌")
+            NSLog("[tba] 上报 ad 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     private class func firstOpenRequest(id: String, completion: ((Bool)->Void)? = nil) {
-        debugPrint("[tba] 开始上报 first_open ")
+        NSLog("[tba] 开始上报 first_open ")
         Request(id: id, parameters: Request.firstOpenParam).netWorkConfig { req in
             req.method = .post
             req.key = .firstOpen
         }.startRequestSuccess { _ in
-            debugPrint("[tba] 上报 first_open 成功 ✅✅✅")
+            NSLog("[tba] 上报 first_open 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            debugPrint("[tba] 上报 first_open 失败 ❌❌❌")
+            NSLog("[tba] 上报 first_open 失败 ❌❌❌")
             completion?(false)
         }
     }
@@ -183,9 +183,9 @@ extension Request {
             return
         }
         if value?.isEmpty != false {
-            debugPrint("[tba] 开始上报 \(eventKey) param:\(value ?? [:])")
+            NSLog("[tba] 开始上报 \(eventKey) param:\(value ?? [:])")
         } else {
-            debugPrint("[tba] 开始上报 \(eventKey)")
+            NSLog("[tba] 开始上报 \(eventKey)")
         }
 
         Request(id: id, parameters: Request.eventParam).netWorkConfig { req in
@@ -193,10 +193,10 @@ extension Request {
             req.key = key
             req.eventKey = eventKey
         }.startRequestSuccess { _ in
-            debugPrint("[tba] 上报 \(eventKey) 成功 ✅✅✅")
+            NSLog("[tba] 上报 \(eventKey) 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            debugPrint("[tba] 上报 \(eventKey) 失败 ❌❌❌")
+            NSLog("[tba] 上报 \(eventKey) 失败 ❌❌❌")
             completion?(false)
         }
     }
