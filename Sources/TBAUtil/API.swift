@@ -13,7 +13,7 @@ import Combine
 
 func TBALog(_ message: String) {
     if TBACacheUtil.isDebug {
-        debugPrint(message)
+        NSLog(message)
     }
 }
 
