@@ -198,11 +198,11 @@ public class TBACacheUtil: NSObject {
     }
     
     public func needUploadFBPrice() -> Bool {
-        NSLog("[FB+Adjust] 当前正在积累广告价值 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
+        TBALog("[FB+Adjust] 当前正在积累广告价值 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
         let ret = (fbPrice?.price ?? 0.0) > 0.01
         if ret {
             // 晴空
-            NSLog("[FB+Adjust] 当前广告价值达到要求进行上传 并清空本地 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
+            TBALog("[FB+Adjust] 当前广告价值达到要求进行上传 并清空本地 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
             fbPrice = nil
         }
         return ret
@@ -276,14 +276,14 @@ extension UserDefaults {
     public func setObject<T: Codable>(_ object: T?, forKey key: String) {
         let encoder = JSONEncoder()
         guard let object = object else {
-            NSLog("[US] object is nil.")
+            TBALog("[US] object is nil.")
             if self.object(forKey: key) != nil {
                 self.removeObject(forKey: key)
             }
             return
         }
         guard let encoded = try? encoder.encode(object) else {
-            NSLog("[US] encoding error.")
+            TBALog("[US] encoding error.")
             return
         }
         self.setValue(encoded, forKey: key)
@@ -291,11 +291,11 @@ extension UserDefaults {
     
     public func getObject<T: Codable>(_ type: T.Type, forKey key: String) -> T? {
         guard let data = self.data(forKey: key) else {
-            NSLog("[US] data is nil for \(key).")
+            TBALog("[US] data is nil for \(key).")
             return nil
         }
         guard let object = try? JSONDecoder().decode(type, from: data) else {
-            NSLog("[US] decoding error.")
+            TBALog("[US] decoding error.")
             return nil
         }
         return object

@@ -66,11 +66,11 @@ public class Request {
     public static var cloakParam: [String: Any] = [:]
     public static func parametersPool(_ ad: GADBaseModel? = nil) -> [String: Any] {
         if osString.isEmpty {
-            NSLog("[tba] 请先设置 osString ")
+            TBALog("[tba] 请先设置 osString ")
             return [:]
         }
         if att.isEmpty {
-            NSLog("[tba] 请先设置 att 枚举")
+            TBALog("[tba] 请先设置 att 枚举")
             return [:]
         }
         return ["manufacturer": "apple",
@@ -166,7 +166,7 @@ public class Request {
     }
     
     deinit {
-        NSLog("[API] request===============deinit")
+        TBALog("[API] request===============deinit")
     }
     
 }
@@ -179,7 +179,7 @@ extension Request {
         
         var queryDic: [String: String] =  self.query ?? [:]
         if Request.commonQuery.isEmpty {
-            NSLog("[tba] 请先配置 公共 query 参数")
+            TBALog("[tba] 请先配置 公共 query 参数")
             return
         }
         
@@ -205,7 +205,7 @@ extension Request {
         
         var headerDic:[String: String] = [:]
         if Request.commonHeader.isEmpty {
-            NSLog("[tba] 请先配置 公共 header 参数")
+            TBALog("[tba] 请先配置 公共 header 参数")
             return
         }
         if let cache = TBACacheUtil.shared.cache(id) {
@@ -221,7 +221,7 @@ extension Request {
         var parameters: [String: Any] = [:]
         // 公共参数
         if Request.commonParam.isEmpty {
-            NSLog("[tba] 请先配置 公共 param 参数")
+            TBALog("[tba] 请先配置 公共 param 参数")
             return
         }
         parameters = deepModifyLogID(in: Request.commonParam, idKeyNames: Request.idKeyNames, secKeyNames: Request.secKeyNames, milKeyNames: Request.milKeyNames)
@@ -242,11 +242,11 @@ extension Request {
                 rq.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
                 rq.httpBody = parameters.data
             }
-            NSLog("[API] -----------------------")
-            NSLog("[API] 请求地址:\(url)")
-            NSLog("[API] 请求参数:\(parameters.jsonString ?? "")")
-            NSLog("[API] 请求header:\(headerDic.jsonString ?? "")")
-            NSLog("[API] -----------------------")
+            TBALog("[API] -----------------------")
+            TBALog("[API] 请求地址:\(url)")
+            TBALog("[API] 请求参数:\(parameters.jsonString ?? "")")
+            TBALog("[API] 请求header:\(headerDic.jsonString ?? "")")
+            TBALog("[API] -----------------------")
         }
         
         dataRequest = sessionManager.request(url, method: method, parameters: nil , encoding: JSONEncoding(), headers: HTTPHeaders.init(headerDic), requestModifier: requestModifier)
@@ -256,16 +256,16 @@ extension Request {
                 
                 let retStr = String(data: result.data ?? Data(), encoding: .utf8)
                 let code = result.response?.statusCode ?? -9999
-                NSLog("[API] ❌❌❌ key:\(self.key) code: \(code) error:\(retStr ?? "")")
+                TBALog("[API] ❌❌❌ key:\(self.key) code: \(code) error:\(retStr ?? "")")
                 self.handleError(code: code, error: retStr, request: result.request)
                 return
             }
             if let data = result.data {
                 let retStr = String(data: data, encoding: .utf8) ?? ""
-                NSLog("[API] ✅✅✅ key: \(self.key) response \(retStr)")
+                TBALog("[API] ✅✅✅ key: \(self.key) response \(retStr)")
                 self.requestSuccess(retStr)
             } else {
-                NSLog("[API] ❌❌❌ event: \(self.key) response data is nil")
+                TBALog("[API] ❌❌❌ event: \(self.key) response data is nil")
                 self.handleError(code: RequestCode.serverError.rawValue, error: nil, request: result.request)
             }
         }

@@ -11,6 +11,12 @@ import GADUtil
 import AdSupport
 import Combine
 
+func TBALog(_ message: String) {
+    if TBACacheUtil.isDebug {
+        debugPrint(message)
+    }
+}
+
 public class SubscriptionToken {
     public var cancelable: AnyCancellable?
     public func unseal() { cancelable = nil }
@@ -34,7 +40,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            NSLog("[tba] 开始重试上报 install 事件")
+                            TBALog("[tba] 开始重试上报 install 事件")
                             self.tbaRequest(id, key: key, retry: false)
                         }
                     }
@@ -46,7 +52,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            NSLog("[tba] 开始重试上报 session 事件")
+                            TBALog("[tba] 开始重试上报 session 事件")
                             self.tbaRequest(id, key: key, retry: false)
                         }
                     }
@@ -58,7 +64,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            NSLog("[tba] 开始重试上报 \(eventKey) 事件")
+                            TBALog("[tba] 开始重试上报 \(eventKey) 事件")
                             self.tbaRequest(id, key: .normalEvent, eventKey: eventKey, value: value, retry: false)
                         }
                     }
@@ -76,7 +82,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            NSLog("[tba] 开始重试上报 firstOpen 事件")
+                            TBALog("[tba] 开始重试上报 firstOpen 事件")
                             self.tbaRequest(id, key: key, retry: false)
                         }
                     }
@@ -98,7 +104,7 @@ extension Request {
                     if !ret, retry {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                             if TBACacheUtil.shared.cache(id) != nil {
-                                NSLog("[tba] 开始重试上报 firstOpen 事件")
+                                TBALog("[tba] 开始重试上报 firstOpen 事件")
                                 self.tbaRequest(id, key: key, retry: false)
                             }
                         }
@@ -113,7 +119,7 @@ extension Request {
                 if !ret, retry {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                         if TBACacheUtil.shared.cache(id) != nil {
-                            NSLog("[tba] 开始重试上报 ad 事件")
+                            TBALog("[tba] 开始重试上报 ad 事件")
                             self.tbaRequest(id, key: key, ad: ad, retry: false)
                         }
                     }
@@ -123,57 +129,57 @@ extension Request {
     }
 
     private class func installRequest(id: String, completion: ((Bool)->Void)? = nil) {
-        NSLog("[tba] 开始上报 install ")
+        TBALog("[tba] 开始上报 install ")
         Request(id: id, parameters: Request.installParam).netWorkConfig { req in
             req.method = .post
             req.key = .install
         }.startRequestSuccess { _ in
-            NSLog("[tba] 上报 install 成功 ✅✅✅")
+            TBALog("[tba] 上报 install 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            NSLog("[tba] 上报 install 失败 ❌❌❌")
+            TBALog("[tba] 上报 install 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     private class func sessionRequest(id: String, completion: ((Bool)->Void)? = nil) {
-        NSLog("[tba] 开始上报 session ")
+        TBALog("[tba] 开始上报 session ")
         Request(id: id, parameters: Request.sessionParam).netWorkConfig { req in
             req.method = .post
             req.key = .session
         }.startRequestSuccess { _ in
-            NSLog("[tba] 上报 session 成功 ✅✅✅")
+            TBALog("[tba] 上报 session 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            NSLog("[tba] 上报 session 失败 ❌❌❌")
+            TBALog("[tba] 上报 session 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     private class func adRequest(id: String, ad: GADBaseModel, completion: ((Bool)->Void)? = nil) {
-        NSLog("[tba] 开始上报 ad ")
+        TBALog("[tba] 开始上报 ad ")
         Request(id: id, parameters: Request.adParam).netWorkConfig { req in
             req.method = .post
             req.key = .ad
         }.startRequestSuccess { _ in
-            NSLog("[tba] 上报 ad 成功 ✅✅✅")
+            TBALog("[tba] 上报 ad 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            NSLog("[tba] 上报 ad 失败 ❌❌❌")
+            TBALog("[tba] 上报 ad 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     private class func firstOpenRequest(id: String, completion: ((Bool)->Void)? = nil) {
-        NSLog("[tba] 开始上报 first_open ")
+        TBALog("[tba] 开始上报 first_open ")
         Request(id: id, parameters: Request.firstOpenParam).netWorkConfig { req in
             req.method = .post
             req.key = .firstOpen
         }.startRequestSuccess { _ in
-            NSLog("[tba] 上报 first_open 成功 ✅✅✅")
+            TBALog("[tba] 上报 first_open 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            NSLog("[tba] 上报 first_open 失败 ❌❌❌")
+            TBALog("[tba] 上报 first_open 失败 ❌❌❌")
             completion?(false)
         }
     }
@@ -182,10 +188,10 @@ extension Request {
         if eventKey.isEmpty || (eventKey == APIKey.normalEvent.rawValue && key != .firstOpen){
             return
         }
-        if value?.isEmpty != false {
-            NSLog("[tba] 开始上报 \(eventKey) param:\(value ?? [:])")
+        if !(value?.isEmpty ?? true) {
+            TBALog("[tba] 开始上报 \(eventKey) param:\(value ?? [:])")
         } else {
-            NSLog("[tba] 开始上报 \(eventKey)")
+            TBALog("[tba] 开始上报 \(eventKey)")
         }
 
         Request(id: id, parameters: Request.eventParam).netWorkConfig { req in
@@ -193,28 +199,28 @@ extension Request {
             req.key = key
             req.eventKey = eventKey
         }.startRequestSuccess { _ in
-            NSLog("[tba] 上报 \(eventKey) 成功 ✅✅✅")
+            TBALog("[tba] 上报 \(eventKey) 成功 ✅✅✅")
             completion?(true)
         }.error { obj, code in
-            NSLog("[tba] 上报 \(eventKey) 失败 ❌❌❌")
+            TBALog("[tba] 上报 \(eventKey) 失败 ❌❌❌")
             completion?(false)
         }
     }
     
     public class func requestCloak(retry: Int = 3, completion: (()->Void)? = nil) {
         if retry == 0 {
-            NSLog("[cloak] 重试超过三次了")
+            TBALog("[cloak] 重试超过三次了")
             completion?()
             return
         }
         
         if let go = TBACacheUtil.shared.go {
-            NSLog("[cloak] 当前已有cloak 是否是激进模式: \(go)")
+            TBALog("[cloak] 当前已有cloak 是否是激进模式: \(go)")
             return
         }
         
         if TBACacheUtil.isDebug {
-            NSLog("[cloak] is debug")
+            TBALog("[cloak] is debug")
             return
         }
         
@@ -229,19 +235,19 @@ extension Request {
         if let query = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
             url = query
         }
-        NSLog("[cloak] start request: \(url)")
+        TBALog("[cloak] start request: \(url)")
         URLSession.shared.dataTaskPublisher(for: URL(string: url)!).map({
             String(data: $0.data, encoding: .utf8)
         }).eraseToAnyPublisher().sink { complete in
             if case .failure(let error) = complete {
-                NSLog("[cloak] err:\(error)")
+                TBALog("[cloak] err:\(error)")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                     self.requestCloak(retry: retry - 1, completion: completion)
                 }
             }
             token.unseal()
         } receiveValue: { data in
-            NSLog("[cloak] \(data ?? "")")
+            TBALog("[cloak] \(data ?? "")")
             TBACacheUtil.shared.go = data == Request.cloakGoName
             completion?()
         }.seal(in: token)
