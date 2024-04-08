@@ -85,7 +85,7 @@ public class TBACacheUtil: NSObject {
     
     @UserDefault(key: "uuid")
     private var uuid: String?
-    func getUUID() -> String {
+    public func getUUID() -> String {
         if let uuid = uuid {
             return uuid
         } else {
