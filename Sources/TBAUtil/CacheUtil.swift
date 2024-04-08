@@ -197,15 +197,14 @@ public class TBACacheUtil: NSObject {
         return ""
     }
     
-    public func needUploadFBPrice() -> Bool {
-        TBALog("[FB+Adjust] 当前正在积累广告价值 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
-        let ret = (fbPrice?.price ?? 0.0) > 0.01
-        if ret {
-            // 晴空
-            TBALog("[FB+Adjust] 当前广告价值达到要求进行上传 并清空本地 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
-            fbPrice = nil
+    public func needUploadFBPrice() -> (Bool, FBPrice) {
+        TBALog("[FB] 当前正在积累广告价值 总价值： \(fbPrice?.price ?? 0) 单位：\(fbPrice?.currency ?? "")")
+        if let fbPrice = fbPrice, fbPrice.price > 0.01 {
+            TBALog("[FB] 当前广告价值达到要求进行上传 并清空本地 总价值： \(fbPrice.price) 单位：\(fbPrice.currency)")
+            self.fbPrice = nil
+            return (true, fbPrice)
         }
-        return ret
+        return (false, FBPrice(price: 0.0, currency: "USD"))
     }
     
     public func getFBPrice() -> FBPrice {
